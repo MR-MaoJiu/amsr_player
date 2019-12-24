@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:amsr_player/config/api.dart';
+import 'package:amsr_player/pages/add_asmr_page.dart';
 import 'package:amsr_player/widgets/music_widget.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:toast/toast.dart';
+
 
 
 class IndexPage extends StatefulWidget {
@@ -26,10 +28,7 @@ class _IndexPageState extends State<IndexPage> {
   var url="";
   bool isplay=false;
   Duration istime;
-  final List<String> piclist = [
-    "http://yuanwanji.club/image/lbt1.jpg",
-    "http://yuanwanji.club/image/lbt2.jpg",
-  ];
+
 
   @override
   void initState() {
@@ -89,6 +88,15 @@ class _IndexPageState extends State<IndexPage> {
               trailing:  Icon(Icons.arrow_right),
               onTap: () {
                //设置页面
+              }
+          ),
+          ListTile(
+              leading: Icon(Icons.queue_music),//第二个功能项
+              title:  Text('发布ASMR'),
+              trailing:  Icon(Icons.arrow_right),
+              onTap: () {
+                //设置页面
+                Navigator.of(context).push(MaterialPageRoute(builder: (contex)=>ADDASMRPage()));
               }
           ),
            Divider(),    //分割线控件
