@@ -99,6 +99,7 @@ class _IndexPageState extends State<IndexPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Expanded(
+                  flex: 1,
                   child: TextField(
                     cursorColor: Colors.pinkAccent, // 光标颜色
                     controller: _textEditingController,
@@ -124,23 +125,23 @@ class _IndexPageState extends State<IndexPage> {
                 ),
               ],
             ) :Container(child: Container(
-    width: MediaQuery.of(context).size.width,
-    height: 200.0,
-    child: Swiper(
-    itemBuilder: _swiperBuilder,
-    itemCount: piclist.length,
-    pagination: new SwiperPagination(
-    builder: DotSwiperPaginationBuilder(
-    color: Colors.black54,
-    activeColor: Colors.pinkAccent,
-    )),
-    scrollDirection: Axis.horizontal,
-    autoplay: true,
-    onTap: (index) => print('点击了第$index个'),
+            width: MediaQuery.of(context).size.width,
+            height: 200.0,
+            child: Swiper(
+            itemBuilder: _swiperBuilder,
+            itemCount: piclist.length,
+            pagination: new SwiperPagination(
+            builder: DotSwiperPaginationBuilder(
+            color: Colors.black54,
+            activeColor: Colors.pinkAccent,
+            )),
+            scrollDirection: Axis.horizontal,
+            autoplay: true,
+            onTap: (index) => print('点击了第$index个'),
     )),
     ),
             Expanded(
-
+              flex: 6,
               child: ListView.builder(
               //列表数量
               itemCount:listitem.length>0?listitem.length:0 ,
@@ -155,26 +156,8 @@ class _IndexPageState extends State<IndexPage> {
               },
 
             ),),
-            Padding(
-               padding: const EdgeInsets.all(8.0),
-               child: Column(
-                 children: <Widget>[
-                   Row(
-                     children: <Widget>[
-                       Padding(
-                         padding: const EdgeInsets.all(8.0),
-                         child: Column(
-                           children: <Widget>[
-                             musicCard(image, title, subtitle,url,val,audioPlayer,isplay,istime),
-                           ],
-                         ),
-                       ),
-                     ],
-                   ),
-                 ],
-               ),
-             ),
-             Divider(),
+           Expanded(flex: 1,child: musicCard(image, title, subtitle,url,val,audioPlayer,isplay,istime),)
+
           ],),);
   }
   void _search() {

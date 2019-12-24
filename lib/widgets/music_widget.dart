@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 Widget musicCard(image,title,subtitle,url,val,audioPlayer,isplay,istime)
 {
-  //print("<<<<<<<<<<<<<<<<<$istime");
-  return Container(color: Colors.white70,height: 70,child:ListTile(
+
+  return Container(color: Colors.white70,height: 50,
+    child:ListTile(
     leading: CircleAvatar(backgroundImage: NetworkImage(image),),
     title: Text(title,overflow: TextOverflow.ellipsis,),
     trailing: Stack(alignment: Alignment.center,children: <Widget>[
@@ -34,5 +35,6 @@ Widget musicCard(image,title,subtitle,url,val,audioPlayer,isplay,istime)
       },)
     ],),
     subtitle: Text(subtitle,overflow: TextOverflow.ellipsis,),
-  ),);
+  ),
+  );
 }
