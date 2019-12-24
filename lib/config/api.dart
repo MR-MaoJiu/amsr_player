@@ -1,0 +1,1 @@
+const getDataAPI="http://yuanwanji.club/music.txt";

@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'package:amsr_player/config/api.dart';
 import 'package:amsr_player/widgets/music_widget.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:toast/toast.dart';
 
 
 class IndexPage extends StatefulWidget {
@@ -13,6 +15,7 @@ class IndexPage extends StatefulWidget {
 }
 
 class _IndexPageState extends State<IndexPage> {
+  DateTime lastPopTime; //上次点击时间
   bool isSearch=false;
   TextEditingController _textEditingController = TextEditingController();
   AudioPlayer audioPlayer = AudioPlayer();
@@ -35,9 +38,29 @@ class _IndexPageState extends State<IndexPage> {
     getdata();
   }
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    audioPlayer.pause();
+    audioPlayer.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () async {
+          if (lastPopTime == null ||
+              DateTime.now().difference(lastPopTime) > Duration(seconds: 1)) {
+            //两次点击间隔超过1秒则重新计时
+            Toast.show("再按一次退出", context);
+            lastPopTime = DateTime.now();
+            return new Future.value(false);
+          }
+          audioPlayer.pause();
+          audioPlayer.dispose();
+          return new Future.value(true);
+        },
+        child:Scaffold(
       drawer:  Drawer(child:  ListView(
         children: <Widget>[
            UserAccountsDrawerHeader(   //Material内置控件
@@ -158,7 +181,7 @@ class _IndexPageState extends State<IndexPage> {
             ),),
            Expanded(flex: 1,child: musicCard(image, title, subtitle,url,val,audioPlayer,isplay,istime),)
 
-          ],),);
+          ],),));
   }
   void _search() {
     setState(() {
@@ -172,7 +195,7 @@ class _IndexPageState extends State<IndexPage> {
     //获取数据
     if(mounted) {
       Dio dio = new Dio();
-      Response response = await dio.get("http://yuanwanji.club/music.txt");
+      Response response = await dio.get(getDataAPI);
       setState(() {
         jsonstr = response.data.toString();
         listitem=json.decode(jsonstr);
