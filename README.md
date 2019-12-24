@@ -1,7 +1,6 @@
 # amsr_player
 
-A new Flutter application.
-
+asmr共享播放器用户可以自由上传AMSR音频
 ## Getting Started
 
 This project is a starting point for a Flutter application.
