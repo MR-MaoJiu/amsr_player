@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:toast/toast.dart';
 class ADDASMRPage extends StatefulWidget {
   @override
   _ADDASMRPageState createState() => _ADDASMRPageState();
@@ -48,7 +49,13 @@ class _ADDASMRPageState extends State<ADDASMRPage> {
                 suffixText: '请输入asmr标签'),
           ),),
           Container(width: 500,padding: EdgeInsets.fromLTRB(32, 8, 32, 16),
-              child: RaisedButton(color: Colors.pinkAccent,child:Text("发布ASMR",style: TextStyle(color: Colors.white),) ,onPressed: (){},)),
+              child: RaisedButton(
+                color: Colors.pinkAccent,
+                child:Text("发布ASMR",
+                  style: TextStyle(color: Colors.white),) ,
+                onPressed: (){
+                  Toast.show("等待更新",context);
+                },)),
         ],)
       ],) ,);
   }

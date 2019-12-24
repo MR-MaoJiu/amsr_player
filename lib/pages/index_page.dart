@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:amsr_player/config/api.dart';
 import 'package:amsr_player/pages/add_asmr_page.dart';
+import 'package:amsr_player/pages/setting_page.dart';
+import 'package:amsr_player/utils/UpGrade_util.dart';
 import 'package:amsr_player/widgets/music_widget.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart';
@@ -35,6 +37,7 @@ class _IndexPageState extends State<IndexPage> {
     // TODO: implement initState
     super.initState();
     getdata();
+    IsUpgrade.isUpgrade(context,true);
   }
   @override
   void dispose() {
@@ -74,11 +77,12 @@ class _IndexPageState extends State<IndexPage> {
 
             decoration:  BoxDecoration(
               //用一个BoxDecoration装饰器提供背景图片
-              image:  DecorationImage(
-                fit: BoxFit.fill,
-                 image:  NetworkImage('https://www.semorn.com/wp-content/uploads/2017/03/ppomoasmr-430x230.jpg')
-
-              ),
+//              image:  DecorationImage(
+//                fit: BoxFit.fill,
+//                 image:  NetworkImage('https://www.semorn.com/wp-content/uploads/2017/03/ppomoasmr-430x230.jpg')
+//
+//              ),
+            color: Colors.pinkAccent
             ),
           ),
 
@@ -88,6 +92,7 @@ class _IndexPageState extends State<IndexPage> {
               trailing:  Icon(Icons.arrow_right),
               onTap: () {
                //设置页面
+                Navigator.of(context).push(MaterialPageRoute(builder: (contex)=>SettingPage()));
               }
           ),
           ListTile(

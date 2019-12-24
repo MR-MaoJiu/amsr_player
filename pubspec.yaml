@@ -27,6 +27,9 @@ dependencies:
   flutter_swiper: ^1.1.6
   audioplayers: ^0.13.5
   toast:
+  path_provider: ^1.2.0
+  open_file: ^2.1.1
+  package_info:
 dev_dependencies:
   flutter_test:
     sdk: flutter
