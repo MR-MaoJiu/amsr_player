@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:amsr_player/config/api.dart';
 import 'package:amsr_player/pages/add_asmr_page.dart';
 import 'package:amsr_player/pages/setting_page.dart';
@@ -21,30 +22,44 @@ class IndexPage extends StatefulWidget {
 class _IndexPageState extends State<IndexPage> {
   DateTime lastPopTime; //上次点击时间
   bool isSearch=false;
+  ScrollController _scrollController = new ScrollController();
   TextEditingController _textEditingController = TextEditingController();
   AudioPlayer audioPlayer = AudioPlayer();
   String  jsonstr="";
   var listitem=[];
+  int  pageSize=10;
+  int pageNum=1;
   var image="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1576959164417&di=8aa461cb27074b046fc5622452bb1c5a&imgtype=0&src=http%3A%2F%2Fi0.hdslb.com%2Fbfs%2Farchive%2Ff1d4300c18a8457a9e062ab28ad8636789af28e7.jpg", title="共享AMSR播放器", subtitle="点击列表播放";
   var val=0.0;
   var url="";
   bool isplay=false;
   Duration istime;
-
-
+  var label="";
+  bool isLoading = false;
   @override
   void initState() {
     // TODO: implement initState
+    _scrollController.addListener(() {
+      print(">>+++++++++<<okokokok");
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        print(">>+++++++++<<");
+        _getMoreData();
+      }
+    });
     super.initState();
-    getdata();
+    getdata(label);
     IsUpgrade.isUpgrade(context,true);
+
   }
+
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
     audioPlayer.pause();
     audioPlayer.dispose();
+    _scrollController.dispose();
   }
   @override
   Widget build(BuildContext context) {
@@ -157,6 +172,7 @@ class _IndexPageState extends State<IndexPage> {
                   ),
                   onTap: (){
                     _search();
+
                   },
                 ),
               ],
@@ -178,20 +194,22 @@ class _IndexPageState extends State<IndexPage> {
     ),
             Expanded(
               flex: 6,
-              child: ListView.builder(
-              //列表数量
-              itemCount:listitem.length>0?listitem.length:0 ,
-              //动态生成
-              itemBuilder: (context, index) {
-                return Column(children: <Widget>[
-                  ListTile(leading:Image.network(listitem[index]["image"]),title: Text(listitem[index]["title"]),subtitle: Text(listitem[index]["subtitle"]),onTap: (){
-                    play(index,listitem.length,context);
-                  },),
-                  Divider(),
-                ],);
-              },
-
-            ),),
+              child:
+                RefreshIndicator(child:ListView.builder(
+                  //列表数量
+                  itemCount:listitem.length>0?listitem.length:0 ,
+                  //动态生成
+                  itemBuilder: (context, index) {
+                    return Column(children: <Widget>[
+                      ListTile(leading:Image.network(listitem[index]["imageurl"]),title: Text(listitem[index]["title"]),subtitle: Text(listitem[index]["subtitle"]),onTap: (){
+                        play(index,listitem.length,context);
+                      },),
+                      Divider(),
+                    ],);
+                  },
+                  controller: _scrollController,
+                ),onRefresh: _onRefresh,),
+              ),
            Expanded(flex: 1,child: musicCard(image, title, subtitle,url,val,audioPlayer,isplay,istime),)
 
           ],),));
@@ -199,20 +217,44 @@ class _IndexPageState extends State<IndexPage> {
   void _search() {
     setState(() {
       print("提交数据："+_textEditingController.text.toString());
+      label=_textEditingController.text.toString();
+      getdata(label);
       _textEditingController.text = '';
       isSearch=false;
+
     });
   }
 
-  getdata() async {
+  getdata(label) async {
+    pageNum=1;
+    FormData formData = new FormData.fromMap({
+      "label": label,
+      "pageNo":pageNum,
+      "pageSize":pageSize
+    });
     //获取数据
     if(mounted) {
       Dio dio = new Dio();
-      Response response = await dio.get(getDataAPI);
+      dio.options.contentType = "application/x-www-data-urlencoded";
+      Response response = await dio.post(getDataAPI,data: formData,);
       setState(() {
         jsonstr = response.data.toString();
-        listitem=json.decode(jsonstr);
         print(jsonstr);
+        if(jsonstr!="-1")
+          {
+            setState(() {
+              isLoading = false;
+              listitem=json.decode(jsonstr);
+            });
+
+          }
+        else{
+          isLoading = false;
+          listitem.clear();
+          Toast.show("没有查询到相关数据", context);
+        }
+
+
       });
     }
   }
@@ -221,11 +263,11 @@ class _IndexPageState extends State<IndexPage> {
       isplay=true;
     });
     try {
-       url=listitem[index]["url"];
+       url=listitem[index]["asmrurl"];
       setState(() {
         title=listitem[index]["title"];
         subtitle=listitem[index]["subtitle"];
-        image=listitem[index]["image"];
+        image=listitem[index]["imageurl"];
       });
 
       await audioPlayer.pause();
@@ -288,17 +330,6 @@ class _IndexPageState extends State<IndexPage> {
             });
           }
     });
-//        audioPlayer.onPlayerCompletion.listen((event) {
-//          if(index<all)
-//          {
-//            play(index+1,all,context);
-//          }
-//          else
-//          {
-//            index=0;
-//            play(index,all,context);
-//          }
-//        });
       } else {
         print('播放失败');
         if(index<all)
@@ -341,6 +372,57 @@ class _IndexPageState extends State<IndexPage> {
       piclist[index],
       fit: BoxFit.fill,
     ));
+  }
+  //刷新
+  Future<Null> _onRefresh()async
+  {
+    if (mounted) {
+      setState(() {
+        listitem.clear();
+        getdata(label);
+      });
+    }
+  }
+  //加载更多
+  void _getMoreData() async {
+
+    pageNum += 1;
+    print("???????????????????$pageNum???$label$isLoading");
+    if (!isLoading) {
+      setState(() {
+        isLoading = true;
+      });
+
+      FormData formData = new FormData.fromMap({
+        "label": label,
+        "pageNo":pageNum,
+        "pageSize":pageSize
+      });
+      //获取数据
+      if(mounted) {
+        Dio dio = new Dio();
+        dio.options.contentType = "application/x-www-data-urlencoded";
+        Response response = await dio.post(getDataAPI,data: formData,);
+        setState(() {
+          jsonstr = response.data.toString();
+          print(jsonstr);
+          if(jsonstr!="-1")
+          {
+            setState(() {
+              isLoading = false;
+              listitem.addAll(json.decode(jsonstr));
+            });
+
+          }
+          else{
+            isLoading = false;
+            Toast.show("没有查询到相关数据", context);
+          }
+
+
+        });
+      }
+    }
   }
 }
 
