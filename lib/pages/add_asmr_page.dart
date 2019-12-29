@@ -27,7 +27,7 @@ class _ADDASMRPageState extends State<ADDASMRPage> {
           Padding(padding: EdgeInsets.fromLTRB(32, 80, 32, 16),child: TextField(
             controller: imgUrlController,
             decoration: InputDecoration(
-                fillColor: Colors.blue.shade100,
+                fillColor: Colors.pinkAccent,
                 filled: true,
                 prefixIcon: Icon(Icons.image),
                 suffixText: '请输入asmr图片链接'),
@@ -35,7 +35,7 @@ class _ADDASMRPageState extends State<ADDASMRPage> {
           Padding(padding: EdgeInsets.fromLTRB(32, 8, 32, 16),child: TextField(
             controller: titleController,
             decoration: InputDecoration(
-                fillColor: Colors.blue.shade100,
+                fillColor: Colors.pinkAccent,
                 filled: true,
                 prefixIcon: Icon(Icons.music_note),
                 suffixText: '请输入asmr标题'),
@@ -43,7 +43,7 @@ class _ADDASMRPageState extends State<ADDASMRPage> {
           Padding(padding: EdgeInsets.fromLTRB(32, 8, 32, 16),child: TextField(
             controller: subTitleController,
             decoration: InputDecoration(
-                fillColor: Colors.blue.shade100,
+                fillColor: Colors.pinkAccent,
                 filled: true,
                 prefixIcon: Icon(Icons.person),
                 suffixText: '请输入asmr作者'),
@@ -51,7 +51,7 @@ class _ADDASMRPageState extends State<ADDASMRPage> {
           Padding(padding: EdgeInsets.fromLTRB(32, 8, 32, 16),child: TextField(
             controller: amsrurlController,
             decoration: InputDecoration(
-                fillColor: Colors.blue.shade100,
+                fillColor: Colors.pinkAccent,
                 filled: true,
                 prefixIcon: Icon(Icons.language),
                 suffixText: '请输入asmr音频链接'),
@@ -59,10 +59,10 @@ class _ADDASMRPageState extends State<ADDASMRPage> {
           Padding(padding: EdgeInsets.fromLTRB(32, 8, 32, 16),child: TextField(
             controller: labelController,
             decoration: InputDecoration(
-                fillColor: Colors.blue.shade100,
+                fillColor: Colors.pinkAccent,
                 filled: true,
                 prefixIcon: Icon(Icons.label_outline),
-                suffixText: '请输入asmr标签'),
+                suffixText: '请输入asmr标签,分割'),
           ),),
           Container(width: 500,padding: EdgeInsets.fromLTRB(32, 8, 32, 16),
               child: RaisedButton(
@@ -81,15 +81,14 @@ class _ADDASMRPageState extends State<ADDASMRPage> {
                       print(img);
                     }
                   else{
-                    getdata(img,title,sub,asmr,lab);
-
+                    putData(img,title,sub,asmr,lab);
                   }
 
                 },)),
         ],)
       ],) ,);
   }
-  getdata(imageurl,title,subtitle,asmrurl,label) async {
+  putData(imageurl,title,subtitle,asmrurl,label) async {
     print(label);
     FormData formData = new FormData.fromMap({
       "imageurl":imageurl,
@@ -102,10 +101,9 @@ class _ADDASMRPageState extends State<ADDASMRPage> {
     if(mounted) {
       Dio dio = new Dio();
       dio.options.contentType = "application/x-www-data-urlencoded";
-      Response response = await dio.post(userPush,data: formData,);
+      Response response = await dio.post(userPushAPI,data: formData,);
       setState(() {
         jsonstr = response.data.toString();
-        print(">>>>>>>>>>>"+jsonstr);
         if(jsonstr=="1")
           {
             Toast.show("发布成功", context);

@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:amsr_player/config/api.dart';
 import 'package:amsr_player/pages/add_asmr_page.dart';
+import 'package:amsr_player/pages/player%E2%80%94%E2%80%94page.dart';
 import 'package:amsr_player/pages/setting_page.dart';
 import 'package:amsr_player/utils/UpGrade_util.dart';
-import 'package:amsr_player/widgets/music_widget.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +22,6 @@ class _IndexPageState extends State<IndexPage> {
   bool isSearch=false;
   ScrollController _scrollController = new ScrollController();
   TextEditingController _textEditingController = TextEditingController();
-  AudioPlayer audioPlayer = AudioPlayer();
   String  jsonstr="";
   var listitem=[];
   int  pageSize=10;
@@ -32,18 +29,14 @@ class _IndexPageState extends State<IndexPage> {
   var image="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1576959164417&di=8aa461cb27074b046fc5622452bb1c5a&imgtype=0&src=http%3A%2F%2Fi0.hdslb.com%2Fbfs%2Farchive%2Ff1d4300c18a8457a9e062ab28ad8636789af28e7.jpg", title="共享AMSR播放器", subtitle="点击列表播放";
   var val=0.0;
   var url="";
-  bool isplay=false;
-  Duration istime;
   var label="";
   bool isLoading = false;
   @override
   void initState() {
     // TODO: implement initState
     _scrollController.addListener(() {
-      print(">>+++++++++<<okokokok");
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        print(">>+++++++++<<");
         _getMoreData();
       }
     });
@@ -57,8 +50,6 @@ class _IndexPageState extends State<IndexPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    audioPlayer.pause();
-    audioPlayer.dispose();
     _scrollController.dispose();
   }
   @override
@@ -73,30 +64,23 @@ class _IndexPageState extends State<IndexPage> {
             lastPopTime = DateTime.now();
             return new Future.value(false);
           }
-          audioPlayer.pause();
-          audioPlayer.dispose();
           return new Future.value(true);
         },
         child:Scaffold(
-      drawer:  Drawer(child:  ListView(
+          floatingActionButton: FloatingActionButton(child: Icon(Icons.add),onPressed: (){
+            Navigator.of(context).push(MaterialPageRoute(builder: (contex)=>ADDASMRPage()));
+          },),
+        drawer:  Drawer(child:  ListView(
         children: <Widget>[
            UserAccountsDrawerHeader(   //Material内置控件
-//            accountName:  Text('CYC'), //用户名
-//            accountEmail:  Text('example@126.com'),  //用户邮箱
-//            currentAccountPicture:  GestureDetector( //用户头像
-//              onTap: () => print('current user'),
-//              child:  CircleAvatar(    //圆形图标控件
-//                backgroundImage:  NetworkImage('https://upload.jianshu.io/users/upload_avatars/7700793/dbcf94ba-9e63-4fcf-aa77-361644dd5a87?imageMogr2/auto-orient/strip|imageView2/1/w/240/h/240'),//图片调取自网络
-//              ),
-//            ),
 
             decoration:  BoxDecoration(
               //用一个BoxDecoration装饰器提供背景图片
-//              image:  DecorationImage(
-//                fit: BoxFit.fill,
-//                 image:  NetworkImage('https://www.semorn.com/wp-content/uploads/2017/03/ppomoasmr-430x230.jpg')
-//
-//              ),
+              image:  DecorationImage(
+                fit: BoxFit.fill,
+                 image:  NetworkImage('http://yuanwanji.club/image/lbt2.jpg')
+
+              ),
             color: Colors.pinkAccent
             ),
           ),
@@ -136,8 +120,6 @@ class _IndexPageState extends State<IndexPage> {
             onPressed: (){
               setState(() {
                 isSearch?isSearch=false:isSearch=true;
-                //isSearch?FocusScope.of(context).requestFocus(_commentFocus):_commentFocus.unfocus();
-
               });
 
             }
@@ -202,7 +184,12 @@ class _IndexPageState extends State<IndexPage> {
                   itemBuilder: (context, index) {
                     return Column(children: <Widget>[
                       ListTile(leading:Image.network(listitem[index]["imageurl"]),title: Text(listitem[index]["title"]),subtitle: Text(listitem[index]["subtitle"]),onTap: (){
-                        play(index,listitem.length,context);
+
+                        Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (BuildContext buildContext)=>PlayerPage(
+                                    listitem:listitem,index:index
+                                   )));
                       },),
                       Divider(),
                     ],);
@@ -210,8 +197,6 @@ class _IndexPageState extends State<IndexPage> {
                   controller: _scrollController,
                 ),onRefresh: _onRefresh,),
               ),
-           Expanded(flex: 1,child: musicCard(image, title, subtitle,url,val,audioPlayer,isplay,istime),)
-
           ],),));
   }
   void _search() {
@@ -258,115 +243,7 @@ class _IndexPageState extends State<IndexPage> {
       });
     }
   }
-  play(index,all,context) async {
-    setState(() {
-      isplay=true;
-    });
-    try {
-       url=listitem[index]["asmrurl"];
-      setState(() {
-        title=listitem[index]["title"];
-        subtitle=listitem[index]["subtitle"];
-        image=listitem[index]["imageurl"];
-      });
 
-      await audioPlayer.pause();
-      int result = await audioPlayer.play(url,isLocal: true);
-      if (result == 1) {
-        // success
-        print('播放成功');
-        Duration time;
-        //Toast.show("播放音频:$title", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-         audioPlayer.onDurationChanged.listen((Duration d){
-           setState(() {
-             time=d;
-           });
-         });
-
-        audioPlayer.onAudioPositionChanged.listen((Duration  p) {
-            setState(() {
-
-              istime=p;
-              val=double.parse((p.inSeconds/time.inSeconds).toString());
-              if(val==1.0)
-                {
-                  if(index<all)
-                  {
-                    play(index+1,all,context);
-                  }
-                  else
-                  {
-                    index=0;
-                    play(index,all,context);
-                  }
-                }
-            });
-    });
-        audioPlayer.onPlayerStateChanged.listen((AudioPlayerState s) {
-        print('当前状态: $s');
-        if(s==AudioPlayerState.COMPLETED)
-          {
-
-            if(index<all)
-            {
-              play(index+1,all,context);
-            }
-            else
-            {
-              index=0;
-              play(index,all,context);
-            }
-          }
-        if(s==AudioPlayerState.PLAYING)
-          {
-            setState(() {
-              isplay=true;
-            });
-          }
-        else if(s==AudioPlayerState.STOPPED)
-          {
-            setState(() {
-              isplay=false;
-            });
-          }
-    });
-      } else {
-        print('播放失败');
-        if(index<all)
-        {
-          play(index+1,all,context);
-        }
-        else
-        {
-          index=0;
-          play(index,all,context);
-        }
-      }
-      
-    }catch(e)
-    {
-      print('播放异常$e');
-      if(index<all)
-      {
-        play(index+1,all,context);
-      }
-      else
-      {
-        index=0;
-        play(index,all,context);
-      }
-    }
-   
-  }
-   pause() async {
-    int result = await audioPlayer.pause();
-    if (result == 1) {
-      // success
-      print('停止播放成功');
-    } else {
-      print('停止播放失败');
-    }
-  }
   Widget _swiperBuilder(BuildContext context, int index) {
     return (Image.network(
       piclist[index],
@@ -387,7 +264,6 @@ class _IndexPageState extends State<IndexPage> {
   void _getMoreData() async {
 
     pageNum += 1;
-    print("???????????????????$pageNum???$label$isLoading");
     if (!isLoading) {
       setState(() {
         isLoading = true;
@@ -424,5 +300,6 @@ class _IndexPageState extends State<IndexPage> {
       }
     }
   }
+
 }
 
