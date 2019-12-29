@@ -26,9 +26,6 @@ class _IndexPageState extends State<IndexPage> {
   var listitem=[];
   int  pageSize=10;
   int pageNum=1;
-  var image="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1576959164417&di=8aa461cb27074b046fc5622452bb1c5a&imgtype=0&src=http%3A%2F%2Fi0.hdslb.com%2Fbfs%2Farchive%2Ff1d4300c18a8457a9e062ab28ad8636789af28e7.jpg", title="共享AMSR播放器", subtitle="点击列表播放";
-  var val=0.0;
-  var url="";
   var label="";
   bool isLoading = false;
   @override
@@ -78,7 +75,7 @@ class _IndexPageState extends State<IndexPage> {
               //用一个BoxDecoration装饰器提供背景图片
               image:  DecorationImage(
                 fit: BoxFit.fill,
-                 image:  NetworkImage('http://yuanwanji.club/image/lbt2.jpg')
+                 image:  NetworkImage('http://yuanwanji.club/image/lbt3.jpg')
 
               ),
             color: Colors.pinkAccent
@@ -141,7 +138,7 @@ class _IndexPageState extends State<IndexPage> {
                         contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
                         border: InputBorder.none,
                         icon: Icon(Icons.label_outline),
-                        hintText: "输入标签",
+                        hintText: "输入关键字进行模糊查询",
                         hintStyle: new TextStyle(
                             fontSize: 14, color: Color.fromARGB(50, 0, 0, 0))),
                     style: new TextStyle(fontSize: 14, color: Colors.pink),

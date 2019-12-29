@@ -29,12 +29,12 @@ class IsUpgrade  {
                content: Column(mainAxisSize: MainAxisSize.min,
                  children: <Widget>[ Text(data["updatecontent"]),],),
                actions: <Widget>[
-                  FlatButton(
-                   onPressed: () {
-                     Navigator.of(context).pop();
-                   },
-                   child:  Text("取消"),
-                 ),
+//                  FlatButton(
+//                   onPressed: () {
+//                     Navigator.of(context).pop();
+//                   },
+//                   child:  Text("取消"),
+//                 ),
                  FlatButton(
                    onPressed: () async {
                      File f=File(path+"/app.apk");

@@ -190,7 +190,7 @@ class _PlayerPageState extends State<PlayerPage> {
               title: Text("ASMR作者"),
               subtitle: Text(listitem[index]["subtitle"]),
             ),),
-          //Text("再次声明：所有音频都来自网络，本程序是由一位绿色AMSR爱好者编写而成，本程序已在GitHub上开源，本程序是免费的无需登录的，并不存储任何音频包括用户上传的音频链接也来自网络，若上传违规音频链接被举报∂将会封禁手机，该手机将不能上传任何音频链接！！！若侵权请点击举报我们会第一时间删除该音频！！！给您带来的不便还请谅解！！！")
+          Text("再次声明：所有音频都来自网络，本程序是由一位绿色AMSR爱好者编写而成，本程序已在GitHub上开源，本程序是免费的无需登录的，并不存储任何音频包括用户上传的音频链接也来自网络！！若侵权请点击举报我们会第一时间删除该音频！！！给您带来的不便还请谅解！！！\n听说微信搜索猿玩机打赏后私信文章有机会上广告页面哦！！！")
         ],),),
       ],),
       );
@@ -256,7 +256,6 @@ void onNext()
   inform() async {
     FormData formData = new FormData.fromMap({
       "id":listitem[index]["id"],
-      "inform":true
     });
     //获取数据
     if(mounted) {
